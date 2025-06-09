@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Metal Cars - Dashboard</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        /* Tus estilos CSS existentes (copia y pega los que tenías) */
+        nav.sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: 220px;
+            background-color: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+            padding-top: 1rem;
+            box-shadow: 2px 0 6px rgb(0 0 0 / 0.1);
+            overflow-y: auto;
+            z-index: 1030;
+        }
+
+        nav.sidebar .navbar-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        nav.sidebar .logo-img {
+            height: 40px;
+            width: auto;
+        }
+
+        nav.sidebar .brand-text {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #343a40;
+            margin-left: 0.5rem;
+            user-select: none;
+        }
+
+        nav.sidebar ul.navbar-nav {
+            flex-direction: column;
+            padding-left: 0;
+            margin-bottom: 0;
+        }
+
+        nav.sidebar ul.navbar-nav li.nav-item {
+            width: 100%;
+        }
+
+        nav.sidebar ul.navbar-nav li.nav-item a.nav-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: #495057;
+            font-weight: 500;
+            border-left: 4px solid transparent;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+            user-select: none;
+        }
+
+        nav.sidebar ul.navbar-nav li.nav-item a.nav-link:hover {
+            background-color: #e9ecef;
+            color: #0d6efd;
+            border-left-color: #0d6efd;
+            text-decoration: none;
+        }
+
+        nav.sidebar ul.navbar-nav li.nav-item a.nav-link.active {
+            background-color: #e7f1ff;
+            color: #0d6efd;
+            border-left-color: #0d6efd;
+        }
+
+        nav.sidebar ul.navbar-nav li.nav-item a.nav-link.disabled {
+            color: #6c757d !important;
+            cursor: not-allowed;
+            background-color: transparent;
+            border-left-color: transparent;
+        }
+
+        #app > .wrapper {
+            margin-left: 220px;
+            padding: 2rem;
+            min-height: 100vh;
+            background-color: #fff;
+        }
+
+        footer.footer {
+            font-size: 0.9rem;
+            color: #6c757d;
+            border-top: 1px solid #dee2e6;
+            padding: 1rem 0;
+            text-align: center;
+            user-select: none;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            nav.sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                box-shadow: none;
+                border-right: none;
+            }
+            #app > .wrapper {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            nav.sidebar ul.navbar-nav {
+                flex-direction: row;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            nav.sidebar ul.navbar-nav li.nav-item {
+                display: inline-block;
+                width: auto;
+            }
+            nav.sidebar ul.navbar-nav li.nav-item a.nav-link {
+                padding: 0.5rem 1rem;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            nav.sidebar ul.navbar-nav li.nav-item a.nav-link.active {
+                border-bottom-color: #0d6efd;
+                border-left: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <nav class="sidebar">
+            <a class="navbar-brand" href="#">
+                <img src="/logo.png" alt="Logo Metal Cars" class="logo-img" />
+                <span class="brand-text">Metal Cars</span>
+            </a>
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" :class="{ active: seccionActual === 'inicio' }" href="#" @click.prevent="cambiarSeccion('inicio')">
+                        Inicio
+                    </a>
+                </li>
+
+                <template v-if="esConductor">
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ active: seccionActual === 'vehiculos' }" href="#" @click.prevent="cambiarSeccion('vehiculos')">
+                            Vehículos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ active: seccionActual === 'servicios' }" href="#" @click.prevent="cambiarSeccion('servicios')">
+                            Servicios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ active: seccionActual === 'reservas' }" href="#" @click.prevent="cambiarSeccion('reservas')">
+                            Reservas
+                        </a>
+                    </li>
+                </template>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="#" @click.prevent="cerrarSesion">Cerrar Sesión</a>
+                </li>
+                 <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a></li>
+            </ul>
+        </nav>
+
+        <div class="wrapper">
+            <main> <h2 v-if="nombreUsuario">¡Bienvenido, {{ nombreUsuario }}!</h2>
+                <p v-else>Cargando información del usuario...</p>
+
+                <div v-if="seccionActual === 'inicio'">
+                    <h3>Panel Principal del Conductor</h3>
+                    <p>Este es el inicio de tu dashboard como conductor. Usa el menú lateral para navegar por las opciones.</p>
+                </div>
+                <div v-if="seccionActual === 'vehiculos'">
+                    <h3>Gestión de Vehículos</h3>
+                    <p>Aquí podrás ver la lista de tus vehículos y gestionarlos. (Este es el contenido de la sección de Vehículos)</p>
+                    </div>
+                <div v-if="seccionActual === 'servicios'">
+                    <h3>Servicios Asignados</h3>
+                    <p>Revisa los servicios de transporte que te han sido asignados. (Este es el contenido de la sección de Servicios)</p>
+                </div>
+                <div v-if="seccionActual === 'reservas'">
+                    <h3>Mis Reservas de Viaje</h3>
+                    <p>Aquí encontrarás el historial y las próximas reservas de tus viajes. (Este es el contenido de la sección de Reservas)</p>
+                </div>
+                <div v-if="!seccionActual">
+                    <p>Selecciona una opción del menú para empezar.</p>
+                </div>
+            </main>
+            <footer class="footer">
+                Pie de pagina
+            </footer>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                idUsuario: null,
+                correoUsuario: null,
+                nombreUsuario: null,
+                rolesUsuario: [], // Guardará el array de roles (ej: ['CONDUCTOR'])
+                esConductor: false, // Propiedad para verificar si el usuario es conductor
+                seccionActual: 'inicio' // La sección activa por defecto al cargar
+            },
+            created() {
+                // Se ejecuta cuando la instancia de Vue ha sido creada
+                this.idUsuario = localStorage.getItem('idUsuario');
+                this.correoUsuario = localStorage.getItem('correoUsuario');
+                this.nombreUsuario = localStorage.getItem('nombresUsuario');
+
+                const rolesString = localStorage.getItem('rolesUsuario');
+                if (rolesString) {
+                    this.rolesUsuario = JSON.parse(rolesString); // Convierte el JSON string de roles a un array
+                    this.esConductor = this.rolesUsuario.includes('CONDUCTOR'); // Verifica si 'CONDUCTOR' está en los roles
+                }
+
+                // Si no hay ID de usuario (no logueado), redirige a la página de acceso
+                if (!this.idUsuario) {
+                    alert('Sesión expirada o no iniciada. Por favor, inicie sesión.');
+                    window.location.href = '/acceso';
+                }
+            },
+            methods: {
+                cambiarSeccion(seccion) {
+                    this.seccionActual = seccion;
+                    // Aquí es donde podrías hacer llamadas Axios para cargar datos
+                    // específicos de la sección si el contenido fuera más complejo.
+                    console.log(`Cargando sección: ${seccion}`);
+                },
+                cerrarSesion() {
+                    // Limpiar todos los datos de sesión del localStorage
+                    localStorage.removeItem('idUsuario');
+                    localStorage.removeItem('correoUsuario');
+                    localStorage.removeItem('nombresUsuario');
+                    localStorage.removeItem('rolesUsuario');
+
+                    // Redirigir a la página de acceso/login
+                    window.location.href = '/acceso';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

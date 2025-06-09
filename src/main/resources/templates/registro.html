@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - MetalCars</title>
+    <style>
+        /* ... Tus estilos CSS aquí ... */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .link {
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        .link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .link a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container" id="app">
+    <form @submit.prevent="registrarConductor">
+        <div class="form-group">
+            <label for="nombres">Nombres:</label>
+            <input type="text" id="nombres" v-model="registroData.nombres" required>
+        </div>
+        <div class="form-group">
+            <label for="apellidos">Apellidos:</label>
+            <input type="text" id="apellidos" v-model="registroData.apellidos" required>
+        </div>
+        <div class="form-group">
+            <label for="correo">Correo:</label>
+            <input type="email" id="correo" v-model="registroData.correo" required>
+        </div>
+        <div class="form-group">
+            <label for="contrasenia">Contraseña:</label>
+            <input type="password" id="contrasenia" v-model="registroData.contrasenia" required>
+        </div>
+        <div class="form-group">
+            <label for="dni">DNI:</label>
+            <input type="text" id="dni" v-model="registroData.dni" required>
+        </div>
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="text" id="telefono" v-model="registroData.telefono">
+        </div>
+
+        <div class="form-group">
+            <label for="ruc">RUC (Opcional):</label>
+            <input type="text" id="ruc" v-model="registroData.ruc">
+        </div>
+
+        <button type="submit">Registrar</button>
+    </form>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                registroData: { // <--- ¡Nuevo nombre! Ahora coincide con el DTO
+                    nombres: '',
+                    apellidos: '',
+                    correo: '',
+                    contrasenia: '',
+                    dni: '',
+                    telefono: '',
+                    ruc: '' // Campo RUC para el Conductor
+                },
+                mensajeError: '',
+                mensajeExito: ''
+            },
+            methods: {
+            async registrarConductor() {
+                this.mensajeError = '';
+                this.mensajeExito = '';
+
+                try {
+                    const response = await axios.post('http://localhost:8081/api/auth/registro', this.registroData, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    this.mensajeExito = response.data;
+                    alert(this.mensajeExito); // Esto debería aparecer
+                    setTimeout(() => {
+                        window.location.href = '/acceso';
+                    }, 1500);
+                } catch (error) { // <--- Este bloque debe capturar el error
+                    if (error.response) {
+                        // Error de respuesta del servidor (HTTP status code no 2xx)
+                        this.mensajeError = `Error: ${error.response.data}`;
+                    } else if (error.request) {
+                        // La petición fue hecha pero no hubo respuesta
+                        this.mensajeError = 'Error de conexión: El servidor no responde.';
+                    } else {
+                        // Algo más sucedió al configurar la petición
+                        this.mensajeError = 'Error al enviar la petición.';
+                    }
+                    alert(this.mensajeError); // Esto debería aparecer si hay un error
+                }
+            }
+        }
+        });
+    </script>
+</body>
+</html>
