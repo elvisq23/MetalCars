@@ -1,21 +1,13 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html>
-    <head>
-        <title>TODO supply a title</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-<div class="my-5 p-5 bg-light rounded-3">
-    <h1 class="display-4">¡Bienvenido a MetalCars!</h1>
-    <p class="lead">Tu taller de confianza para el cuidado y mantenimiento de tu vehículo.</p>
-    <hr class="my-4">
-    <p>Explora nuestros servicios, conoce más sobre nosotros y contáctanos.</p>
-    <a class="btn btn-primary btn-lg" href="/servicios" role="button">Ver Servicios</a>
-</div>    
-    </body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}"> <head>
+    <title>Metal Cars - Inicio</title>
+</head>
+<body>
+    <main layout:fragment="content">
+        <h1>¡Bienvenido a Metal Cars!</h1>
+        <p>Esta es la página de inicio general para todos los usuarios.</p>
+    </main>
+</body>
 </html>

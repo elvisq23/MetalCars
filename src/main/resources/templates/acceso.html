@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso - MetalCars</title>
     <style>
+        /* Tus estilos CSS existentes */
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -101,60 +102,65 @@
     </div>
 
     <script>
-        new Vue({
-            el: "#app",
-            data: {
-                accesoRequisito: {
-                    correo: '',
-                    contrasenia: ''
-                },
-                mensajeError: '',
-                mensajeExito: ''
+    new Vue({
+        el: "#app",
+        data: {
+            accesoRequisito: {
+                correo: '',
+                contrasenia: ''
             },
-            methods: {
-                async autenticarUsuario() {
-                    this.mensajeError = '';
-                    this.mensajeExito = '';
+            mensajeError: '',
+            mensajeExito: ''
+        },
+        methods: {
+            async autenticarUsuario() {
+                this.mensajeError = '';
+                this.mensajeExito = '';
 
-                    try {
-                        const response = await axios.post('http://localhost:8081/api/auth/login', this.accesoRequisito, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        });
-
-                        const loginData = response.data; // Aquí está tu LoginRespuestaDTO
-
-                        this.mensajeExito = loginData.mensaje;
-                        alert(this.mensajeExito);
-
-                        // --- Guardar información del usuario y roles en localStorage ---
-                        localStorage.setItem('idUsuario', loginData.idUsuario);
-                        localStorage.setItem('correoUsuario', loginData.correo);
-                        localStorage.setItem('nombresUsuario', loginData.nombres);
-                        localStorage.setItem('rolesUsuario', JSON.stringify(loginData.roles)); // Guardamos el array de roles como JSON string
-
-                        // --- Redireccionar según el rol ---
-                        if (loginData.roles && loginData.roles.includes('CONDUCTOR')) {
-                            window.location.href = '/dashboard-conductor'; // Redirige a la URL del dashboard del conductor
-                        } else {
-                            // Puedes añadir lógica para otros roles o una página de error/genérica
-                            window.location.href = '/acceso'; // Si no es conductor, lo regresamos al login o a una página de error
+                try {
+                    // Asegúrate de que el puerto sea el correcto (8080 o 8081)
+                    // Confirma si tu backend corre en 8081, si no, cámbialo a 8080
+                    const response = await axios.post('http://localhost:8081/api/auth/login', this.accesoRequisito, {
+                        headers: {
+                            'Content-Type': 'application/json'
                         }
+                    });
 
-                    } catch (error) {
-                        if (error.response) {
-                            this.mensajeError = `Error: ${error.response.data}`;
-                        } else if (error.request) {
-                            this.mensajeError = 'Error de conexión: El servidor no responde.';
-                        } else {
-                            this.mensajeError = 'Error al enviar la petición.';
-                        }
-                        alert(this.mensajeError);
+                    const loginData = response.data; // Aquí está tu LoginRespuestaDTO
+
+                    this.mensajeExito = loginData.mensaje;
+                    alert(this.mensajeExito);
+
+                    // Guardar información del usuario y roles en localStorage ANTES de redirigir
+                    localStorage.setItem('idUsuario', loginData.idUsuario);
+                    localStorage.setItem('correoUsuario', loginData.correo);
+                    localStorage.setItem('nombresUsuario', loginData.nombres);
+                    localStorage.setItem('rolesUsuario', JSON.stringify(loginData.roles)); // ¡Importante: guardar el array de roles como JSON string!
+
+                    // --- LÓGICA DE REDIRECCIÓN CORREGIDA ---
+                    if (loginData.roles && loginData.roles.includes('DUEÑO')) {
+    window.location.href = '/dashboard-dueno'; // CAMBIO AQUÍ
+} else if (loginData.roles && loginData.roles.includes('CONDUCTOR')) {
+    window.location.href = '/vehiculos'; // CAMBIO AQUÍ
+} else {
+    alert('Tipo de usuario no reconocido. Redirigiendo a inicio.');
+    window.location.href = '/inicio';
+}
+                    // ----------------------------------------------------
+
+                } catch (error) {
+                    if (error.response) {
+                        this.mensajeError = `Error: ${error.response.data}`;
+                    } else if (error.request) {
+                        this.mensajeError = 'Error de conexión: El servidor no responde.';
+                    } else {
+                        this.mensajeError = 'Error al enviar la petición.';
                     }
+                    alert(this.mensajeError);
                 }
             }
-        });
+        }
+    });
     </script>
 </body>
 </html>

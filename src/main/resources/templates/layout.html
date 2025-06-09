@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-    <title>Metal Cars - Dashboard</title>
+    <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE">Metal Cars - Dashboard</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <th:block layout:fragment="css"></th:block>
     <style>
-        /* Tus estilos CSS existentes (copia y pega los que tenías) */
+        /* Tus estilos CSS existentes aquí */
         nav.sidebar {
             position: fixed;
             top: 0;
@@ -142,24 +144,52 @@
             </a>
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" :class="{ active: seccionActual === 'inicio' }" href="#" @click.prevent="cambiarSeccion('inicio')">
+                    <a class="nav-link" :class="{ 'active': currentPath === '/' || currentPath === '/inicio' }" href="/inicio">
                         Inicio
                     </a>
                 </li>
 
-                <template v-if="esConductor">
+                <template v-if="hasRole('DUEÑO')">
                     <li class="nav-item">
-                        <a class="nav-link" :class="{ active: seccionActual === 'vehiculos' }" href="#" @click.prevent="cambiarSeccion('vehiculos')">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/dashboard-dueno' }" href="/dashboard-dueno">
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/sedes' }" href="/sedes">
+                            Sedes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/reportes' }" href="/reportes">
+                            Reportes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/colaboradores' }" href="/colaboradores">
+                            Colaboradores
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/conductores-dueno' }" href="/conductores-dueno">
+                            Conductores
+                        </a>
+                    </li>
+                </template>
+
+                <template v-if="hasRole('CONDUCTOR')">
+                    <li class="nav-item">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/vehiculos' }" href="/vehiculos">
                             Vehículos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="{ active: seccionActual === 'servicios' }" href="#" @click.prevent="cambiarSeccion('servicios')">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/serviciosSis' }" href="/serviciosSis">
                             Servicios
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" :class="{ active: seccionActual === 'reservas' }" href="#" @click.prevent="cambiarSeccion('reservas')">
+                        <a class="nav-link" :class="{ 'active': currentPath === '/reservas' }" href="/reservas">
                             Reservas
                         </a>
                     </li>
@@ -168,34 +198,12 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#" @click.prevent="cerrarSesion">Cerrar Sesión</a>
                 </li>
-                 <li class="nav-item"><a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a></li>
             </ul>
         </nav>
 
         <div class="wrapper">
-            <main> <h2 v-if="nombreUsuario">¡Bienvenido, {{ nombreUsuario }}!</h2>
-                <p v-else>Cargando información del usuario...</p>
-
-                <div v-if="seccionActual === 'inicio'">
-                    <h3>Panel Principal del Conductor</h3>
-                    <p>Este es el inicio de tu dashboard como conductor. Usa el menú lateral para navegar por las opciones.</p>
-                </div>
-                <div v-if="seccionActual === 'vehiculos'">
-                    <h3>Gestión de Vehículos</h3>
-                    <p>Aquí podrás ver la lista de tus vehículos y gestionarlos. (Este es el contenido de la sección de Vehículos)</p>
-                    </div>
-                <div v-if="seccionActual === 'servicios'">
-                    <h3>Servicios Asignados</h3>
-                    <p>Revisa los servicios de transporte que te han sido asignados. (Este es el contenido de la sección de Servicios)</p>
-                </div>
-                <div v-if="seccionActual === 'reservas'">
-                    <h3>Mis Reservas de Viaje</h3>
-                    <p>Aquí encontrarás el historial y las próximas reservas de tus viajes. (Este es el contenido de la sección de Reservas)</p>
-                </div>
-                <div v-if="!seccionActual">
-                    <p>Selecciona una opción del menú para empezar.</p>
-                </div>
-            </main>
+            <main layout:fragment="content">
+                </main>
             <footer class="footer">
                 Pie de pagina
             </footer>
@@ -207,51 +215,46 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
+    <script layout:fragment="script">
+        // Este script será sobrescrito si una página hija proporciona un fragmento 'script'
+        // De lo contrario, este script base de Vue.js se ejecutará.
         new Vue({
             el: "#app",
             data: {
                 idUsuario: null,
                 correoUsuario: null,
-                nombreUsuario: null,
-                rolesUsuario: [], // Guardará el array de roles (ej: ['CONDUCTOR'])
-                esConductor: false, // Propiedad para verificar si el usuario es conductor
-                seccionActual: 'inicio' // La sección activa por defecto al cargar
+                rolesUsuario: [],
+                currentPath: window.location.pathname
             },
             created() {
-                // Se ejecuta cuando la instancia de Vue ha sido creada
                 this.idUsuario = localStorage.getItem('idUsuario');
                 this.correoUsuario = localStorage.getItem('correoUsuario');
-                this.nombreUsuario = localStorage.getItem('nombresUsuario');
 
                 const rolesString = localStorage.getItem('rolesUsuario');
                 if (rolesString) {
-                    this.rolesUsuario = JSON.parse(rolesString); // Convierte el JSON string de roles a un array
-                    this.esConductor = this.rolesUsuario.includes('CONDUCTOR'); // Verifica si 'CONDUCTOR' está en los roles
+                    try {
+                        this.rolesUsuario = JSON.parse(rolesString);
+                    } catch (e) {
+                        console.error("Error al parsear rolesUsuario de localStorage:", e);
+                        this.rolesUsuario = [];
+                    }
                 }
 
-                // Si no hay ID de usuario (no logueado), redirige a la página de acceso
                 if (!this.idUsuario) {
-                    alert('Sesión expirada o no iniciada. Por favor, inicie sesión.');
+                    //alert('Sesión expirada o no iniciada. Por favor, inicie sesión.');
                     window.location.href = '/acceso';
                 }
             },
             methods: {
-                cambiarSeccion(seccion) {
-                    this.seccionActual = seccion;
-                    // Aquí es donde podrías hacer llamadas Axios para cargar datos
-                    // específicos de la sección si el contenido fuera más complejo.
-                    console.log(`Cargando sección: ${seccion}`);
-                },
                 cerrarSesion() {
-                    // Limpiar todos los datos de sesión del localStorage
                     localStorage.removeItem('idUsuario');
                     localStorage.removeItem('correoUsuario');
                     localStorage.removeItem('nombresUsuario');
                     localStorage.removeItem('rolesUsuario');
-
-                    // Redirigir a la página de acceso/login
                     window.location.href = '/acceso';
+                },
+                hasRole(roleName) {
+                    return this.rolesUsuario.includes(roleName);
                 }
             }
         });

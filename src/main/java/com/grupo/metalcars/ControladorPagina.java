@@ -1,59 +1,51 @@
 package com.grupo.metalcars;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.ui.Model; // Importa la clase Model para pasar datos a la vista
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Controller
+@Controller // Marca esta clase como un controlador de Spring
 public class ControladorPagina {
 
-    // --- Mapeos para páginas PÚBLICAS (usan 'pagina.html' como layout) ---
-    @GetMapping("/")
-    public String pagina(Model model) {
-        model.addAttribute("contenido", "inicio"); // Tu landing page (bienvenida)
-        return "pagina"; // Este usa tu plantilla maestra para páginas públicas (pagina.html)
+    // Maneja la ruta raíz ("/") y "/inicio" para la landing page.
+    // Inicia con la sección 'home' por defecto.
+    @GetMapping({"/", "/inicio"})
+    public String mostrarInicioLanding(Model model) {
+        // Añade al modelo el nombre del fragmento HTML que debe cargarse en 'pagina.html'
+        // Asumo que 'home.html' está en la carpeta 'landing_fragments'
+        model.addAttribute("contenido", "home");
+        return "pagina"; // Devuelve el nombre de la plantilla base de tu landing (pagina.html)
     }
 
+    // Maneja la ruta "/nosotros" para mostrar la sección "Nosotros"
     @GetMapping("/nosotros")
-    public String nosotros(Model model) {
+    public String mostrarNosotrosLanding(Model model) {
+        // Añade al modelo el nombre del fragmento HTML para "Nosotros"
         model.addAttribute("contenido", "nosotros");
-        return "pagina";
+        return "pagina"; // Devuelve la plantilla base de tu landing (pagina.html)
     }
 
+    // Maneja la ruta "/servicios" para mostrar la sección "Servicios"
     @GetMapping("/servicios")
-    public String servicios(Model model) {
+    public String mostrarServiciosLanding(Model model) {
+        // Añade al modelo el nombre del fragmento HTML para "Servicios"
         model.addAttribute("contenido", "servicios");
-        return "pagina";
+        return "pagina"; // Devuelve la plantilla base de tu landing (pagina.html)
     }
 
+    // Maneja la ruta "/ubicacion" para mostrar la sección "Ubícanos"
     @GetMapping("/ubicacion")
-    public String ubicacion(Model model) {
+    public String mostrarUbicacionLanding(Model model) {
+        // Añade al modelo el nombre del fragmento HTML para "Ubícanos"
         model.addAttribute("contenido", "ubicacion");
-        return "pagina";
+        return "pagina"; // Devuelve la plantilla base de tu landing (pagina.html)
     }
 
-    @GetMapping("/acceso")
-    public String acceso() {
-        return "acceso"; // Esta es la página de login (pública)
-    }
-
-    @GetMapping("/registro")
-    public String registro() {
-        return "registro"; // Esta es la página de registro (pública)
-    }
-
-    // --- Mapeos para páginas INTERNAS (usan '_layout.html' como layout) ---
-    @GetMapping("/home") // Esta URL sirve la página principal del sistema interno
-    public String home() {
-        return "home"; // Devuelve home.html, que a su vez decora con _layout.html
-    }
-
-    // --- FUTUROS Mapeos para secciones internas ---
-    @GetMapping("/conductores") // Ejemplo: para gestionar conductores
-    public String conductores() {
-        // Aquí podrías añadir lógica para cargar datos de conductores
-        // y pasar un modelo si es necesario.
-        return "conductores"; // Esto esperaría un archivo src/main/resources/templates/conductores.html
-                              // que también decoraría con _layout.html
-    }
+    // --- IMPORTANTE: Deja aquí solo las rutas de la LANDING PAGE ---
+    // Si la ruta /acceso es la página de login para el sistema interno,
+    // asegúrate de que la esté manejando el NavegacionController
+    // para evitar conflictos. Si esta es la página de login de la landing, déjala.
+   
+    // Si tienes otras rutas para la landing (ej. /registro), añádelas aquí de forma similar.
+    // ...
 }
