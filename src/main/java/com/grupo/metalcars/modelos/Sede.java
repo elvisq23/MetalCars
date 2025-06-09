@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity // Indica que esta clase es una entidad JPA y se mapea a una tabla de BD
-@Table(name = "sede") // Especifica el nombre de la tabla en la base de datos
+@Table(name = "sedes") // Especifica el nombre de la tabla en la base de datos
 public class Sede {
 
     @Id // Marca este campo como la clave primaria
